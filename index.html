@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Verifier</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #00796b;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        #start-btn {
+            background-color: #00796b;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #start-btn:hover {
+            background-color: #004d40;
+        }
+        #webcam-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        #label-container {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .result {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .underage {
+            color: #e53935;
+        }
+        .adult {
+            color: #43a047;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Age Verifier</h1>
+        <p>Please look at the camera and click the button below to verify your age.</p>
+        <button id="start-btn" onclick="init()">Start Verification</button>
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "https://teachablemachine.withgoogle.com/models/Qb1jBjBD4/";
+        let model, webcam, labelContainer, maxPredictions;
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const flip = true;
+            webcam = new tmImage.Webcam(300, 300, flip);
+            await webcam.setup();
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+
+            document.getElementById("start-btn").style.display = "none";
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            let highestProbability = 0;
+            let verifiedAge = "";
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+
+                if (prediction[i].probability > highestProbability) {
+                    highestProbability = prediction[i].probability;
+                    verifiedAge = prediction[i].className;
+                }
+            }
+
+            const resultElement = document.getElementById("result");
+            if (verifiedAge === "adult") {
+                resultElement.innerHTML = "Verification Result: Adult (18+)";
+                resultElement.className = "result adult";
+            } else {
+                resultElement.innerHTML = "Verification Result: Underage (<18)";
+                resultElement.className = "result underage";
+            }
+        }
+    </script>
+</body>
+</html>
