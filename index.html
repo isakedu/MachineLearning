@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Age Verifier</title>
+    <title>Alder Verifisering</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -70,8 +70,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Age Verifier</h1>
-        <p>Please look at the camera and click the button below to verify your age.</p>
+        <h1>Alder Verifisering</h1>
+        <p>Vennligst se på kameraet og trykk på knappen nedenfor for å verifisere alderen din.</p>
         <button id="start-btn" onclick="init()">Start Verification</button>
         <div id="webcam-container"></div>
         <div id="label-container"></div>
@@ -127,7 +127,7 @@
                 }
             }
 
-            const resultElement = document.getElementById("result"); // finds the result element
+            const resultElement = document.getElementById("result"); // finner elementet som bærer resultate
             if (verifiedAge === "adult") {
                 resultElement.innerHTML = "Verification Result: Adult (18+)";
                 resultElement.className = "result adult";
