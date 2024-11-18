@@ -72,7 +72,7 @@
     <div class="container">
         <h1>Alder Verifisering</h1>
         <p>Vennligst se på kameraet og trykk på knappen nedenfor for å verifisere alderen din.</p>
-        <button id="start-btn" onclick="init()">Start Verification</button>
+        <button id="start-btn" onclick="init()">Start Verifisering</button>
         <div id="webcam-container"></div>
         <div id="label-container"></div>
         <div id="result" class="result"></div>
@@ -129,10 +129,10 @@
 
             const resultElement = document.getElementById("result"); // finner elementet som bærer resultate
             if (verifiedAge === "adult") {
-                resultElement.innerHTML = "Verification Result: Adult (18+)";
+                resultElement.innerHTML = "Verifisering Resultat: Voksen (18+)";
                 resultElement.className = "result adult";
             } else {
-                resultElement.innerHTML = "Verification Result: Underage (<18)";
+                resultElement.innerHTML = "Verifisering Resultat: Barn (<18)";
                 resultElement.className = "result underage";
             }
         }
